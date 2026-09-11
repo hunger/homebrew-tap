@@ -81,8 +81,8 @@ A bumped formula loses its old bottle block until the new bottle is built in
 the same run. To re-bottle a formula without an upstream change, run the
 workflow manually with its name in the "force" input.
 
-Successful bumps are committed straight to the default branch by
-`github-actions[bot]`; there are no pull requests. If any formula fails the
+Successful bumps are committed straight to the default branch, authored as
+Tobias Hunger <tobias.hunger@gmail.com>; there are no pull requests. If any formula fails the
 job is marked failed after committing the others, and the job summary lists
 what went wrong.
 
