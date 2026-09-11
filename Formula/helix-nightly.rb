@@ -19,6 +19,12 @@ class HelixNightly < Formula
     end
   end
 
+  bottle do
+    root_url "https://github.com/hunger/homebrew-tap/releases/download/helix-nightly-2026.07.23.1603"
+    rebuild 1
+    sha256 cellar: :any, x86_64_linux: "e35a3eae8ee248d8c2245f250d01beab70543e4de286337a4072695b8228903c"
+  end
+
   depends_on "rust" => :build
 
   def commit
