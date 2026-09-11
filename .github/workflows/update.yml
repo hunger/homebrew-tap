@@ -1,0 +1,101 @@
+name: Update formulae
+
+on:
+  schedule:
+    - cron: "17 */2 * * *" # every two hours
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Formulae to re-verify and re-bottle even if current (space-separated)"
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-formulae
+  cancel-in-progress: false
+
+env:
+  BOTTLES_TO_KEEP: "5" # GitHub releases kept per bottled formula
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest # x86_64; bottles are built for this platform only
+    steps:
+      - name: Set up Homebrew and check out this tap
+        id: setup
+        uses: Homebrew/actions/setup-homebrew@main
+        with:
+          # Lets `brew livecheck` query GitHub releases without hitting the anonymous rate limit.
+          brew-gh-api-token: ${{ github.token }}
+
+      - name: Bump outdated formulae and build bottles
+        id: bump
+        working-directory: ${{ steps.setup.outputs.repository-path }}
+        continue-on-error: true
+        env:
+          FORCE: ${{ inputs.force }}
+        run: |
+          set -euo pipefail
+          force_args=()
+          for f in ${FORCE:-}; do force_args+=(--force "$f"); done
+          python3 scripts/bump-formulae.py \
+            --tap "${{ steps.setup.outputs.tap-name }}" \
+            --bottle --bottle-root-url "https://github.com/${GITHUB_REPOSITORY}/releases/download" \
+            "${force_args[@]}"
+
+      - name: Upload bottles to GitHub Releases
+        working-directory: ${{ steps.setup.outputs.repository-path }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          [ -f bottles/releases.json ] || { echo "No bottles built."; exit 0; }
+          jq -c '.[]' bottles/releases.json | while read -r rel; do
+            tag=$(jq -r .tag <<<"$rel")
+            mapfile -t files < <(jq -r '.files[]' <<<"$rel")
+            if ! gh release view "$tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+              gh release create "$tag" --repo "$GITHUB_REPOSITORY" --title "$tag" \
+                --notes "Homebrew bottles for ${tag}. Installed automatically by \`brew install\`." \
+                --latest=false
+            fi
+            gh release upload "$tag" "${files[@]}" --repo "$GITHUB_REPOSITORY" --clobber
+            echo "Uploaded ${#files[@]} file(s) to release $tag"
+
+            # Prune old bottle releases of the same formula, keeping the newest N.
+            name=${tag%-*}
+            gh release list --repo "$GITHUB_REPOSITORY" --limit 200 \
+              --json tagName,createdAt \
+              --jq "[.[] | select(.tagName | startswith(\"${name}-\"))] | sort_by(.createdAt) | reverse | .[${BOTTLES_TO_KEEP}:] | .[].tagName" |
+            while read -r old; do
+              [ -n "$old" ] || continue
+              echo "Pruning old bottle release $old"
+              gh release delete "$old" --repo "$GITHUB_REPOSITORY" --cleanup-tag --yes
+            done
+          done
+
+      - name: Commit and push
+        working-directory: ${{ steps.setup.outputs.repository-path }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          UPDATED: ${{ steps.bump.outputs.updated }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- Formula; then
+            echo "Nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}"
+          git add Formula
+          git commit -m "Update formulae: ${UPDATED}"
+          git push origin "HEAD:${GITHUB_REF_NAME:-main}"
+
+      - name: Fail if any formula could not be updated
+        if: steps.bump.outcome == 'failure'
+        run: |
+          echo "::error::At least one formula failed to update; see the job summary."
+          exit 1
