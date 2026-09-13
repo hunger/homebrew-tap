@@ -33,6 +33,7 @@ Exit status: 0 if everything succeeded, 2 if at least one formula failed
 Usage: bump-formulae.py [--tap OWNER/NAME] [--no-verify] [--bottle --bottle-root-url URL]
                         [--force NAME]... [FORMULA...]
 """
+
 from __future__ import annotations
 
 import argparse
@@ -43,16 +44,20 @@ import re
 import subprocess
 import sys
 import urllib.request
+from datetime import datetime, timezone
 from pathlib import Path
+from re import Pattern
 
 URL_RE = re.compile(r'^(\s*url\s+")([^"]+)(".*)$')
 SHA_RE = re.compile(r'^(\s*sha256\s+")([0-9a-f]{64})(".*)$')
 VERSION_RE = re.compile(r'^(\s*version\s+")([^"]+)(".*)$')
-MODE_RE = re.compile(r'^\s*#\s*bump:\s*(fixed-url|git-commit)(?:\s+(\S+))?\s*$', re.MULTILINE)
-COMMIT_RE = re.compile(r'[0-9a-f]{40}')
-LIVECHECK_START_RE = re.compile(r'^(\s*)livecheck do\s*$')
-BOTTLE_START_RE = re.compile(r'^(\s*)bottle do\s*$')
-BOTTLE_MARK_RE = re.compile(r'^\s*#\s*bottle:\s*(\S+)', re.MULTILINE)
+MODE_RE = re.compile(
+    r"^\s*#\s*bump:\s*(fixed-url|git-commit)(?:\s+(\S+))?\s*$", re.MULTILINE
+)
+COMMIT_RE: Pattern[str] = re.compile(r"[0-9a-f]{40}")
+LIVECHECK_START_RE = re.compile(r"^(\s*)livecheck do\s*$")
+BOTTLE_START_RE = re.compile(r"^(\s*)bottle do\s*$")
+BOTTLE_MARK_RE = re.compile(r"^\s*#\s*bottle:\s*(\S+)", re.MULTILINE)
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 FORMULA_DIR = REPO_ROOT / "Formula"
@@ -66,9 +71,12 @@ ENV = {
 }
 
 
-def brew(*args: str, check: bool = True, capture: bool = False) -> subprocess.CompletedProcess:
-    return subprocess.run(["brew", *args], env=ENV, check=check, text=True,
-                          capture_output=capture)
+def brew(
+    *args: str, check: bool = True, capture: bool = False
+) -> subprocess.CompletedProcess:
+    return subprocess.run(
+        ["brew", *args], env=ENV, check=check, text=True, capture_output=capture
+    )
 
 
 def livecheck(tap: str, names: list[str]) -> list[dict]:
@@ -78,12 +86,16 @@ def livecheck(tap: str, names: list[str]) -> list[dict]:
     try:
         return json.loads(proc.stdout or "[]")
     except json.JSONDecodeError:
-        raise RuntimeError(f"brew livecheck failed (exit {proc.returncode}): {proc.stderr.strip()}") from None
+        raise RuntimeError(
+            f"brew livecheck failed (exit {proc.returncode}): {proc.stderr.strip()}"
+        ) from None
 
 
 def http_get(url: str) -> urllib.request.Request:
     headers = {"User-Agent": "homebrew-tap-bump/1.0"}
-    token = os.environ.get("HOMEBREW_GITHUB_API_TOKEN") or os.environ.get("GITHUB_TOKEN")
+    token = os.environ.get("HOMEBREW_GITHUB_API_TOKEN") or os.environ.get(
+        "GITHUB_TOKEN"
+    )
     if token and url.startswith("https://api.github.com/"):
         headers["Authorization"] = f"Bearer {token}"
     return urllib.request.Request(url, headers=headers)
@@ -124,7 +136,9 @@ def sha256_of_url(url: str) -> str:
     return h.hexdigest()
 
 
-def rewrite(path: Path, old: str, new: str, mode: str = "version", new_commit: str | None = None) -> str:
+def rewrite(
+    path: Path, old: str, new: str, mode: str = "version", new_commit: str | None = None
+) -> str:
     """Return the formula text bumped from `old` to `new`.
 
     mode "version":    substitute old -> new inside every url.
@@ -135,8 +149,12 @@ def rewrite(path: Path, old: str, new: str, mode: str = "version", new_commit: s
     out: list[str] = []
     pending_url: str | None = None
     urls_changed = 0
-    livecheck_indent: str | None = None  # inside `livecheck do ... end`: its url is not a download
-    bottle_indent: str | None = None  # inside `bottle do ... end`: stale after a bump, drop it
+    livecheck_indent: str | None = (
+        None  # inside `livecheck do ... end`: its url is not a download
+    )
+    bottle_indent: str | None = (
+        None  # inside `bottle do ... end`: stale after a bump, drop it
+    )
     drop_blank = False
 
     for line in lines:
@@ -161,13 +179,16 @@ def rewrite(path: Path, old: str, new: str, mode: str = "version", new_commit: s
             livecheck_indent = m.group(1)
         elif m := VERSION_RE.match(line):
             if m.group(2) != old:
-                raise RuntimeError(f"version line says {m.group(2)!r}, expected {old!r}")
+                raise RuntimeError(
+                    f"version line says {m.group(2)!r}, expected {old!r}"
+                )
             line = f"{m.group(1)}{new}{m.group(3)}\n"
         elif m := URL_RE.match(line):
             url = m.group(2)
             if mode == "fixed-url":
                 new_url = url
             elif mode == "git-commit":
+                assert new_commit is not None
                 if not COMMIT_RE.search(url):
                     raise RuntimeError(f"url does not contain a 40-hex commit: {url}")
                 new_url = COMMIT_RE.sub(new_commit, url)
@@ -215,14 +236,21 @@ def bottle(tap: str, name: str, root_url: str) -> dict:
     """
     full = f"{tap}/{name}"
     rel = str((FORMULA_DIR / f"{name}.rb").relative_to(REPO_ROOT))
-    info = json.loads(brew("info", "--json=v2", full, capture=True).stdout)["formulae"][0]
+    info = json.loads(brew("info", "--json=v2", full, capture=True).stdout)["formulae"][
+        0
+    ]
     version = info["versions"]["stable"]
     release_tag = f"{name}-{version}"
     BOTTLE_DIR.mkdir(exist_ok=True)
     for old in BOTTLE_DIR.glob(f"{name}-*"):
         old.unlink()
-    subprocess.run(["brew", "bottle", "--json", f"--root-url={root_url}/{release_tag}", full],
-                   cwd=BOTTLE_DIR, env=ENV, check=True, text=True)
+    subprocess.run(
+        ["brew", "bottle", "--json", f"--root-url={root_url}/{release_tag}", full],
+        cwd=BOTTLE_DIR,
+        env=ENV,
+        check=True,
+        text=True,
+    )
     json_files = sorted(BOTTLE_DIR.glob(f"{name}--*.bottle*.json"))
     if not json_files:
         raise RuntimeError("brew bottle produced no JSON")
@@ -241,16 +269,71 @@ def bottle(tap: str, name: str, root_url: str) -> dict:
     return {"tag": release_tag, "files": files}
 
 
+def update_readme_table(names: list[str]) -> None:
+    """Update the 'Last Updated' timestamp in README.md for each bumped formula,
+    then re-sort rows by newest timestamp first."""
+    readme = REPO_ROOT / "README.md"
+    if not readme.exists():
+        return
+    lines = readme.read_text().splitlines(keepends=True)
+
+    header_idx = None
+    for i, line in enumerate(lines):
+        if "| Last Updated" in line:
+            header_idx = i
+            break
+    if header_idx is None:
+        return
+
+    data_start = header_idx + 2  # skip separator row
+    data_end = data_start
+    while data_end < len(lines) and lines[data_end].strip().startswith("|"):
+        data_end += 1
+
+    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    name_set = set(names)
+
+    rows: list[tuple[str, str]] = []
+    for i in range(data_start, data_end):
+        line = lines[i].rstrip("\n")
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        formula_name = cells[0].strip("`")
+        if formula_name in name_set:
+            cells[2] = timestamp
+            line = "| " + " | ".join(cells) + " |"
+        ts = cells[2]
+        rows.append((ts, line))
+
+    rows.sort(key=lambda r: r[0], reverse=True)
+    lines[data_start:data_end] = [r[1] + "\n" for r in rows]
+    readme.write_text("".join(lines))
+
+
 def main() -> int:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(
+        description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
     ap.add_argument("--tap", default="hunger/tap")
-    ap.add_argument("--no-verify", action="store_true", help="skip style/audit/install/test")
-    ap.add_argument("--bottle", action="store_true",
-                    help="build bottles for formulae marked `# bottle:` (implies verification)")
-    ap.add_argument("--bottle-root-url", default=None,
-                    help="e.g. https://github.com/OWNER/homebrew-tap/releases/download")
-    ap.add_argument("--force", action="append", default=[], metavar="NAME",
-                    help="verify (and bottle) NAME even if it is current; repeatable")
+    ap.add_argument(
+        "--no-verify", action="store_true", help="skip style/audit/install/test"
+    )
+    ap.add_argument(
+        "--bottle",
+        action="store_true",
+        help="build bottles for formulae marked `# bottle:` (implies verification)",
+    )
+    ap.add_argument(
+        "--bottle-root-url",
+        default=None,
+        help="e.g. https://github.com/OWNER/homebrew-tap/releases/download",
+    )
+    ap.add_argument(
+        "--force",
+        action="append",
+        default=[],
+        metavar="NAME",
+        help="verify (and bottle) NAME even if it is current; repeatable",
+    )
     ap.add_argument("formulae", nargs="*")
     args = ap.parse_args()
     if args.bottle and not args.bottle_root_url:
@@ -271,7 +354,7 @@ def main() -> int:
         path = FORMULA_DIR / f"{name}.rb"
         original = path.read_text()
         mode, mode_arg = detect_mode(original)
-        new_commit = None
+        new_commit: str | None = None
         try:
             if mode == "git-commit":
                 if not mode_arg:
@@ -294,9 +377,16 @@ def main() -> int:
             continue
         wants_bottle = args.bottle and BOTTLE_MARK_RE.search(original) is not None
         if new == old:
-            print(f"{name}: {old} forced re-verify" + (" and re-bottle" if wants_bottle else ""))
+            print(
+                f"{name}: {old} forced re-verify"
+                + (" and re-bottle" if wants_bottle else "")
+            )
         else:
-            print(f"{name}: {old} -> {new}" + (f" ({new_commit[:8]})" if new_commit else "") + f" [{mode}]")
+            print(
+                f"{name}: {old} -> {new}"
+                + (f" ({new_commit[:8]})" if new_commit else "")
+                + f" [{mode}]"
+            )
         try:
             if new != old:
                 path.write_text(rewrite(path, old, new, mode, new_commit))
@@ -309,7 +399,20 @@ def main() -> int:
             failed.append((name, f"{old} -> {new}: {exc}"))
             print(f"{name}: FAILED, reverted: {exc}", file=sys.stderr)
             continue
-        updated.append((name, old, new if new != old else f"{new} (rebottled)" if wants_bottle else f"{new} (re-verified)"))
+        updated.append(
+            (
+                name,
+                old,
+                new
+                if new != old
+                else f"{new} (rebottled)"
+                if wants_bottle
+                else f"{new} (re-verified)",
+            )
+        )
+
+    if updated:
+        update_readme_table([name for name, _, _ in updated])
 
     if releases:
         BOTTLE_DIR.mkdir(exist_ok=True)
@@ -317,18 +420,25 @@ def main() -> int:
 
     summary = []
     if updated:
-        summary.append("## Updated\n" + "\n".join(f"- {n}: {o} -> {w}" for n, o, w in updated))
+        summary.append(
+            "## Updated\n" + "\n".join(f"- {n}: {o} -> {w}" for n, o, w in updated)
+        )
     if failed:
-        summary.append("## Failed (left unchanged)\n" + "\n".join(f"- {n}: {e}" for n, e in failed))
+        summary.append(
+            "## Failed (left unchanged)\n" + "\n".join(f"- {n}: {e}" for n, e in failed)
+        )
     if not updated and not failed:
         summary.append("All formulae are current.")
     text = "\n\n".join(summary)
     print("\n" + text)
     if step_summary := os.environ.get("GITHUB_STEP_SUMMARY"):
-        Path(step_summary).open("a").write(text + "\n")
+        with Path(step_summary).open("a") as f:
+            f.write(text + "\n")
     if gh_out := os.environ.get("GITHUB_OUTPUT"):
         with Path(gh_out).open("a") as f:
-            f.write("updated=" + " ".join(f"{n} {o}->{w}" for n, o, w in updated) + "\n")
+            f.write(
+                "updated=" + " ".join(f"{n} {o}->{w}" for n, o, w in updated) + "\n"
+            )
     return 2 if failed else 0
 
 

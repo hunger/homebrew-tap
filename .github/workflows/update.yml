@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Set up Homebrew and check out this tap
         id: setup
-        uses: Homebrew/actions/setup-homebrew@main
+        uses: Homebrew/actions/setup-homebrew@1e34f2e2acaa766b7efacb8c26352e6abbb023f9 # v2026.06.13.1
         with:
           # Lets `brew livecheck` query GitHub releases without hitting the anonymous rate limit.
           brew-gh-api-token: ${{ github.token }}
@@ -83,14 +83,14 @@ jobs:
           UPDATED: ${{ steps.bump.outputs.updated }}
         run: |
           set -euo pipefail
-          if git diff --quiet -- Formula; then
+          if git diff --quiet -- Formula README.md; then
             echo "Nothing to commit."
             exit 0
           fi
           git config user.name "Tobias Hunger"
           git config user.email "tobias.hunger@gmail.com"
           git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}"
-          git add Formula
+          git add Formula README.md
           git commit -m "Update formulae: ${UPDATED}"
           git push origin "HEAD:${GITHUB_REF_NAME:-main}"
 

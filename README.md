@@ -2,16 +2,16 @@
 
 Homebrew formulae that install prebuilt GitHub release binaries on macOS and Linux.
 
-| Formula       | Upstream                                     | Notes                                              |
-|---------------|----------------------------------------------|----------------------------------------------------|
-| `jj-starship` | https://github.com/dmmulroy/jj-starship      | musl static binaries on Linux                      |
-| `release-plz` | https://github.com/release-plz/release-plz   | musl on Linux; no Intel macOS asset, builds from source there |
-| `maki`        | https://github.com/tontinton/maki            | musl on Linux; use `brew upgrade`, not `maki update` |
-| `crates-lsp`  | https://github.com/MathiasPius/crates-lsp    | glibc-linked binaries on Linux (no musl upstream)  |
-| `kache`       | https://github.com/kunobi-ninja/kache        | musl static binaries on Linux; shell completions    |
-| `devbox`      | https://codeberg.org/devbox-rs/devbox        | Linux x86_64 only (sole upstream asset); Codeberg, livecheck via Forgejo API |
-| `nvim-nightly` | https://github.com/neovim/neovim            | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
-| `helix-nightly` | https://github.com/helix-editor/helix      | built from a pinned `master` commit, installed as `hx-nightly`; Linux x86_64 bottle hosted on this repo's Releases, other platforms build from source (~2 min) |
+| Formula       | Upstream                                     | Last Updated          | Notes                                              |
+|---------------|----------------------------------------------|-----------------------|----------------------------------------------------|
+| `kache`       | https://github.com/kunobi-ninja/kache        | 2026-09-12T22:22:15Z  | musl static binaries on Linux; shell completions    |
+| `helix-nightly` | https://github.com/helix-editor/helix      | 2026-09-11T15:03:51Z  | built from a pinned `master` commit, installed as `hx-nightly`; Linux x86_64 bottle hosted on this repo's Releases, other platforms build from source (~2 min) |
+| `jj-starship` | https://github.com/dmmulroy/jj-starship      | 2026-09-11T14:51:57Z  | musl static binaries on Linux                      |
+| `release-plz` | https://github.com/release-plz/release-plz   | 2026-09-11T14:51:57Z  | musl on Linux; no Intel macOS asset, builds from source there |
+| `maki`        | https://github.com/tontinton/maki            | 2026-09-11T14:51:57Z  | musl on Linux; use `brew upgrade`, not `maki update` |
+| `crates-lsp`  | https://github.com/MathiasPius/crates-lsp    | 2026-09-11T14:51:57Z  | glibc-linked binaries on Linux (no musl upstream)  |
+| `devbox`      | https://codeberg.org/devbox-rs/devbox        | 2026-09-11T14:51:57Z  | Linux x86_64 only (sole upstream asset); Codeberg, livecheck via Forgejo API |
+| `nvim-nightly` | https://github.com/neovim/neovim            | 2026-09-11T14:51:57Z  | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
 
 ## Use
 

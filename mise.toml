@@ -1,0 +1,40 @@
+[settings]
+jobs = 1
+
+[tools]
+ruff = "0.16.7"
+ty = "0.0.80"
+zizmor = "1.30.1"
+actionlint = "1.7.12"
+
+[tasks.ci]
+description = "Run all fmt and lint tasks (ruff, ty, zizmor, actionlint)"
+depends = ["fmt::ruff", "lint::ruff", "lint::ty", "lint::zizmor", "lint::actionlint"]
+
+# --- ruff ---
+
+[tasks."fmt::ruff"]
+description = "Auto-format imports and fix lint issues (ruff)"
+run = "ruff check --fix scripts/ && ruff format scripts/"
+
+[tasks."lint::ruff"]
+description = "Lint Python code (ruff)"
+run = "ruff check scripts/"
+
+# --- ty ---
+
+[tasks."lint::ty"]
+description = "Type-check Python code (ty)"
+run = "ty check scripts/"
+
+# --- zizmor ---
+
+[tasks."lint::zizmor"]
+description = "Audit GitHub Actions workflows (zizmor)"
+run = "zizmor ."
+
+# --- actionlint ---
+
+[tasks."lint::actionlint"]
+description = "Lint GitHub Actions workflows (actionlint)"
+run = "actionlint"
