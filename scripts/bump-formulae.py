@@ -342,6 +342,8 @@ def main() -> int:
         ap.error("--bottle and --no-verify are mutually exclusive")
 
     results = livecheck(args.tap, sorted(set(args.formulae) | set(args.force)))
+    print("livecheck response:")
+    print(json.dumps(results, indent=2))
     updated: list[tuple[str, str, str]] = []
     failed: list[tuple[str, str]] = []
     releases: list[dict] = []
@@ -349,11 +351,13 @@ def main() -> int:
     for r in results:
         name = r["formula"]
         if "error" in r:
+            print(f"[decision] {name}: input error={r['error']!r} -> FAIL (livecheck)")
             failed.append((name, f"livecheck: {r['error']}"))
             continue
         path = FORMULA_DIR / f"{name}.rb"
         original = path.read_text()
         mode, mode_arg = detect_mode(original)
+        print(f"[decision] {name}: input version={r.get('version')!r} mode={mode!r}")
         new_commit: str | None = None
         try:
             if mode == "git-commit":
@@ -369,34 +373,52 @@ def main() -> int:
                     new = old
         except Exception as exc:  # noqa: BLE001
             failed.append((name, f"lookup: {exc}"))
+            print(
+                f"[decision] {name}: lookup failed ({exc!r}) -> FAIL", file=sys.stderr
+            )
             print(f"{name}: FAILED lookup: {exc}", file=sys.stderr)
             continue
         forced = name in args.force
         if new == old and not forced:
-            print(f"{name}: {old} is current")
+            print(
+                f"[decision] {name}: old={old!r} new={new!r} outdated={r['version'].get('outdated')!r}"
+                f" forced={forced} -> SKIP (current)"
+            )
             continue
         wants_bottle = args.bottle and BOTTLE_MARK_RE.search(original) is not None
         if new == old:
             print(
-                f"{name}: {old} forced re-verify"
-                + (" and re-bottle" if wants_bottle else "")
+                f"[decision] {name}: old={old!r} new={new!r} forced={forced}"
+                f" -> RE-VERIFY (re-bottle={wants_bottle})"
             )
         else:
             print(
-                f"{name}: {old} -> {new}"
-                + (f" ({new_commit[:8]})" if new_commit else "")
-                + f" [{mode}]"
+                f"[decision] {name}: old={old!r} new={new!r} mode={mode!r}"
+                f" new_commit={new_commit!r} -> BUMP (re-bottle={wants_bottle})"
             )
         try:
             if new != old:
+                print(f"[update] {name}: rewriting formula file")
                 path.write_text(rewrite(path, old, new, mode, new_commit))
             if not args.no_verify:
+                print(
+                    f"[verify] {name}: brew style/audit/install/test (build_bottle={wants_bottle})"
+                )
                 verify(args.tap, name, build_bottle=wants_bottle)
+            else:
+                print(f"[verify] {name}: skipped (--no-verify)")
             if wants_bottle:
+                print(
+                    f"[bottle] {name}: building bottle (root_url={args.bottle_root_url!r})"
+                )
                 releases.append(bottle(args.tap, name, args.bottle_root_url))
         except Exception as exc:  # noqa: BLE001 - report and keep going
             path.write_text(original)
             failed.append((name, f"{old} -> {new}: {exc}"))
+            print(
+                f"[decision] {name}: step failed ({exc!r}) -> REVERT + FAIL",
+                file=sys.stderr,
+            )
             print(f"{name}: FAILED, reverted: {exc}", file=sys.stderr)
             continue
         updated.append(
