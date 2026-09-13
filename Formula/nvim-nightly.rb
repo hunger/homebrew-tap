@@ -4,7 +4,7 @@ class NvimNightly < Formula
   # bump: fixed-url
   # The `nightly` tag moves every night: the URLs never change, only the
   # version and the checksums do. The version comes from the release notes.
-  version "0.13.0-dev-1596"
+  version "0.13.0-dev-1630"
   license "Apache-2.0"
 
   livecheck do
@@ -20,22 +20,22 @@ class NvimNightly < Formula
   on_macos do
     on_arm do
       url "https://github.com/neovim/neovim/releases/download/nightly/nvim-macos-arm64.tar.gz"
-      sha256 "01a266bc4f9d3d94000171f75e6d89e36340957da323469b98137171d6d311d6"
+      sha256 "2ae199d86074936ae8bce8aa39c011b358006072e651801e2d0dfe0e831c9cf8"
     end
     on_intel do
       url "https://github.com/neovim/neovim/releases/download/nightly/nvim-macos-x86_64.tar.gz"
-      sha256 "23f3493bbb25850638433ec5b19288abe26d98478f3dcf51b630a8998afd9fe1"
+      sha256 "c816406bf0a978e058760dfb8b40ea5a68de710867c996327bd35db435c6bb27"
     end
   end
 
   on_linux do
     on_arm do
       url "https://github.com/neovim/neovim/releases/download/nightly/nvim-linux-arm64.tar.gz"
-      sha256 "ddd64fb881466ca8a61120f955dde98636dd94110372ab1f9e57fba4912caa0c"
+      sha256 "4a390dec46f24a0b7868a474512c698120e6da31907faa54df12cb0baa9973d1"
     end
     on_intel do
       url "https://github.com/neovim/neovim/releases/download/nightly/nvim-linux-x86_64.tar.gz"
-      sha256 "ae0e2ef8812adb2b6bdd28c473a9285d771b0c32d948e0e3f96d0748920a63c3"
+      sha256 "82d176c215116f96d73c7ffbb788cbac9574507b1191a81f072b7215a2876ef2"
     end
   end
 
