@@ -293,9 +293,11 @@ def bottle(tap: str, name: str, root_url: str) -> dict:
     return {"tag": release_tag, "files": files}
 
 
-def update_readme_table(names: list[str]) -> None:
-    """Update the 'Last Updated' timestamp in README.md for each bumped formula,
-    then re-sort rows by newest timestamp first."""
+def update_readme_table(names: list[tuple[str, str]]) -> None:
+    """Update the 'Version' and 'Last Updated' columns in README.md for each
+    bumped formula, then re-sort rows by newest timestamp first.
+
+    `names` is a list of (formula name, new version) tuples."""
     readme = REPO_ROOT / "README.md"
     if not readme.exists():
         return
@@ -315,14 +317,16 @@ def update_readme_table(names: list[str]) -> None:
         data_end += 1
 
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    name_set = set(names)
+    version_by_name = dict(names)
 
     rows: list[tuple[str, str]] = []
     for i in range(data_start, data_end):
         line = lines[i].rstrip("\n")
         cells = [c.strip() for c in line.strip().strip("|").split("|")]
-        formula_name = cells[0].strip("`")
-        if formula_name in name_set:
+        m = re.search(r"\[`(.+?)`\]", cells[0])
+        formula_name = m.group(1) if m else None
+        if formula_name in version_by_name:
+            cells[1] = version_by_name[formula_name]
             cells[2] = timestamp
             line = "| " + " | ".join(cells) + " |"
         ts = cells[2]
@@ -458,7 +462,7 @@ def main() -> int:
         )
 
     if updated:
-        update_readme_table([name for name, _, _ in updated])
+        update_readme_table([(name, new) for name, old, new in updated])
 
     if releases:
         BOTTLE_DIR.mkdir(exist_ok=True)
