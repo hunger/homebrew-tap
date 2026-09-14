@@ -127,8 +127,20 @@ def current_version(text: str) -> str | None:
     return None
 
 
-def sha256_of_url(url: str) -> str:
-    req = http_get(url)
+def resolve_url(url: str, version: str) -> str:
+    """Resolve a formula url to a concrete download URL.
+
+    `#{version}` is interpolated like Homebrew does; other Ruby expressions
+    (e.g. `#{os.name}`) are left for Homebrew and cannot be resolved here.
+    """
+    for m in re.finditer(r"#\{(.+?)\}", url):
+        if m.group(1) != "version":
+            raise RuntimeError(f"url contains unresolvable Ruby expression: {url}")
+    return url.replace("#{version}", version)
+
+
+def sha256_of_url(url: str, version: str) -> str:
+    req = http_get(resolve_url(url, version))
     h = hashlib.sha256()
     with urllib.request.urlopen(req, timeout=120) as resp:
         while chunk := resp.read(1 << 20):
@@ -141,13 +153,14 @@ def rewrite(
 ) -> str:
     """Return the formula text bumped from `old` to `new`.
 
-    mode "version":    substitute old -> new inside every url.
+    mode "version":    substitute old -> new inside every url; urls may use
+                       `#{version}` interpolation instead of the literal version.
     mode "fixed-url":  leave urls alone, refresh checksums only.
     mode "git-commit": replace the 40-hex commit in every url with new_commit.
     """
     lines = path.read_text().splitlines(keepends=True)
     out: list[str] = []
-    pending_url: str | None = None
+    pending_url: tuple[str, str] | None = None  # (url, version)
     urls_changed = 0
     livecheck_indent: str | None = (
         None  # inside `livecheck do ... end`: its url is not a download
@@ -193,23 +206,34 @@ def rewrite(
                     raise RuntimeError(f"url does not contain a 40-hex commit: {url}")
                 new_url = COMMIT_RE.sub(new_commit, url)
             else:
-                if old not in url:
-                    raise RuntimeError(f"url does not contain version {old!r}: {url}")
-                new_url = url.replace(old, new)
+                if old in url:
+                    new_url = url.replace(old, new)
+                elif "#{version}" in url:
+                    # The version lives in the `version` line; the url interpolates it.
+                    new_url = url
+                else:
+                    raise RuntimeError(
+                        f"url contains neither {old!r} nor '#{{version}}': {url}"
+                    )
             urls_changed += 1
-            pending_url = new_url
+            pending_url = (new_url, new)
+            if new_url != url:
+                print(f"    url was {line.rstrip()}")
+                print(f"    now is {m.group(1)}{new_url}{m.group(3)}")
             line = f"{m.group(1)}{new_url}{m.group(3)}\n"
         elif m := SHA_RE.match(line):
             if pending_url is None:
                 raise RuntimeError("sha256 line without a preceding url line")
-            print(f"    fetching {pending_url}")
-            digest = sha256_of_url(pending_url)
+            print(f"    fetching {resolve_url(*pending_url)}")
+            digest = sha256_of_url(*pending_url)
             pending_url = None
             line = f"{m.group(1)}{digest}{m.group(3)}\n"
         out.append(line)
 
     if pending_url is not None:
-        raise RuntimeError(f"url without a following sha256 line: {pending_url}")
+        raise RuntimeError(
+            f"url without a following sha256 line: {resolve_url(*pending_url)}"
+        )
     if urls_changed == 0:
         raise RuntimeError("no url lines found")
     return "".join(out)
