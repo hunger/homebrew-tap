@@ -20,6 +20,7 @@ class Devbox < Formula
 
   def install
     bin.install "devbox"
+    generate_completions_from_executable(bin/"devbox", "admin", "completions")
   end
 
   test do
