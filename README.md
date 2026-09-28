@@ -4,9 +4,9 @@ Homebrew formulae that install prebuilt GitHub release binaries on macOS and Lin
 
 | Formula       | Version               | Last Updated          | Notes                                              |
 |---------------|-----------------------|-----------------------|----------------------------------------------------|
+| [`kache`](https://github.com/kunobi-ninja/kache) | 0.28.0 | 2026-09-28T20:36:43Z | musl static binaries on Linux; shell completions |
+| [`maki`](https://github.com/tontinton/maki) | 0.5.7 | 2026-09-28T20:36:43Z | musl on Linux; use `brew upgrade`, not `maki update` |
 | [`nvim-nightly`](https://github.com/neovim/neovim) | 0.13.0-dev-1749 | 2026-09-28T05:31:12Z | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
-| [`kache`](https://github.com/kunobi-ninja/kache) | 0.27.0 | 2026-09-27T23:07:02Z | musl static binaries on Linux; shell completions |
-| [`maki`](https://github.com/tontinton/maki) | 0.5.6 | 2026-09-22T21:24:02Z | musl on Linux; use `brew upgrade`, not `maki update` |
 | [`release-plz`](https://github.com/release-plz/release-plz) | 0.3.169 | 2026-09-19T12:32:56Z | musl on Linux; no Intel macOS asset, builds from source there |
 | [`helix-nightly`](https://github.com/helix-editor/helix) | 2026.07.23.1603 | 2026-09-11T15:03:51Z  | built from a pinned `master` commit, installed as `hx-nightly`; Linux x86_64 bottle hosted on this repo's Releases, other platforms build from source (~2 min) |
 | [`jj-starship`](https://github.com/dmmulroy/jj-starship) | 0.7.4 | 2026-09-11T14:51:57Z  | musl static binaries on Linux                      |
