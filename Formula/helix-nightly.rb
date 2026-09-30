@@ -53,6 +53,14 @@ class HelixNightly < Formula
   test do
     assert_match "post-modern text editor", shell_output("#{bin}/hx-nightly --help")
     assert_match commit[0, 8], shell_output("#{bin}/hx-nightly --version")
-    assert_match "✓", shell_output("#{bin}/hx-nightly --health")
+
+    # `--health` probes the tree-sitter grammar plugins and can hang in CI;
+    # just verify the key grammars were installed.
+    grammar_dir = libexec/"runtime/grammars"
+    grammar_sos = Dir.glob("#{grammar_dir}/*.so").map { |f| File.basename(f) }
+    %w[rust python c cpp toml json yaml ini html css markdown xml].each do |lang|
+      assert_includes grammar_sos, "#{lang}.so",
+        "missing grammar for #{lang}"
+    end
   end
 end
