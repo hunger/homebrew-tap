@@ -4,10 +4,10 @@ Homebrew formulae that install prebuilt GitHub release binaries on macOS and Lin
 
 | Formula       | Version               | Last Updated          | Notes                                              |
 |---------------|-----------------------|-----------------------|----------------------------------------------------|
+| [`maki`](https://github.com/tontinton/maki) | 0.6.1 | 2026-10-09T17:01:58Z | musl on Linux; use `brew upgrade`, not `maki update` |
 | [`nvim-nightly`](https://github.com/neovim/neovim) | 0.13.0-dev-1825 | 2026-10-09T09:11:56Z | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
 | [`release-plz`](https://github.com/release-plz/release-plz) | 0.3.170 | 2026-10-07T23:09:42Z | musl on Linux; no Intel macOS asset, builds from source there |
 | [`kache`](https://github.com/kunobi-ninja/kache) | 1.0.0 | 2026-10-05T14:50:06Z | musl static binaries on Linux; shell completions |
-| [`maki`](https://github.com/tontinton/maki) | 0.6.0 | 2026-10-03T21:23:11Z | musl on Linux; use `brew upgrade`, not `maki update` |
 | [`helix-nightly`](https://github.com/helix-editor/helix) | 2026.09.29.0232 | 2026-09-30T15:11:36Z | built from a pinned `master` commit, installed as `hx-nightly`; Linux x86_64 bottle hosted on this repo's Releases, other platforms build from source (~2 min) |
 | [`jj-starship`](https://github.com/dmmulroy/jj-starship) | 0.7.4 | 2026-09-11T14:51:57Z  | musl static binaries on Linux                      |
 | [`crates-lsp`](https://github.com/MathiasPius/crates-lsp) | 0.4.3 | 2026-09-11T14:51:57Z  | glibc-linked binaries on Linux (no musl upstream)  |
