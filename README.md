@@ -4,10 +4,10 @@ Homebrew formulae that install prebuilt GitHub release binaries on macOS and Lin
 
 | Formula       | Version               | Last Updated          | Notes                                              |
 |---------------|-----------------------|-----------------------|----------------------------------------------------|
+| [`release-plz`](https://github.com/release-plz/release-plz) | 0.3.173 | 2026-10-19T23:46:11Z | musl on Linux; no Intel macOS asset, builds from source there |
 | [`nvim-nightly`](https://github.com/neovim/neovim) | 0.13.0-dev-1915 | 2026-10-19T13:27:27Z | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
 | [`maki`](https://github.com/tontinton/maki) | 0.6.4 | 2026-10-17T12:14:51Z | musl on Linux; use `brew upgrade`, not `maki update` |
 | [`kache`](https://github.com/kunobi-ninja/kache) | 1.2.2 | 2026-10-15T21:28:49Z | musl static binaries on Linux; shell completions |
-| [`release-plz`](https://github.com/release-plz/release-plz) | 0.3.172 | 2026-10-12T23:03:20Z | musl on Linux; no Intel macOS asset, builds from source there |
 | [`helix-nightly`](https://github.com/helix-editor/helix) | 2026.09.29.0232 | 2026-09-30T15:11:36Z | built from a pinned `master` commit, installed as `hx-nightly`; Linux x86_64 bottle hosted on this repo's Releases, other platforms build from source (~2 min) |
 | [`crates-lsp`](https://github.com/MathiasPius/crates-lsp) | 0.4.3 | 2026-09-11T14:51:57Z  | glibc-linked binaries on Linux (no musl upstream)  |
 | [`devbox`](https://codeberg.org/devbox-rs/devbox) | 1.0.1 | 2026-09-11T14:51:57Z  | Linux x86_64 only (sole upstream asset); Codeberg, livecheck via Forgejo API |
