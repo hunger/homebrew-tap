@@ -1,7 +1,7 @@
 class ReleasePlz < Formula
   desc "Publish Rust crates from CI with a Release PR"
   homepage "https://release-plz.dev"
-  version "0.3.173"
+  version "0.3.174"
   license any_of: ["MIT", "Apache-2.0"]
 
   livecheck do
@@ -13,12 +13,12 @@ class ReleasePlz < Formula
   on_macos do
     on_arm do
       url "https://github.com/release-plz/release-plz/releases/download/release-plz-v#{version}/release-plz-aarch64-apple-darwin.tar.gz"
-      sha256 "8d62c91eb7afd0cdb30729dbbf5129d0f078d80299dca89d7147709479ab67b1"
+      sha256 "415494b8540935e4b38f815bd4c3640092313b101323398d641e91b1f7489d80"
     end
     on_intel do
       # Upstream publishes no x86_64 macOS binary, so build from source there.
       url "https://github.com/release-plz/release-plz/archive/refs/tags/release-plz-v#{version}.tar.gz"
-      sha256 "d0113f78c73d28fba1199e8f9ed29e40e0744b0b7249df05c7631f007969af91"
+      sha256 "4e94e5c4a61aa9678b2d48fb8aeae4d6f9afd252d87490c923bfe5acd70eecd9"
       depends_on "rust" => :build
     end
   end
@@ -26,11 +26,11 @@ class ReleasePlz < Formula
   on_linux do
     on_arm do
       url "https://github.com/release-plz/release-plz/releases/download/release-plz-v#{version}/release-plz-aarch64-unknown-linux-musl.tar.gz"
-      sha256 "b075dbb77d37f76f884795b3d1aa7855175b6e39bc68d515882ef39ccbd09b9d"
+      sha256 "ab1a5a36d93cc4abedd9474381300a709ea06cd915c88c67c187118dbd9475d1"
     end
     on_intel do
       url "https://github.com/release-plz/release-plz/releases/download/release-plz-v#{version}/release-plz-x86_64-unknown-linux-musl.tar.gz"
-      sha256 "b108620481a5742d5b1f12cfce40ffddfee15f8516c24827ce3c337b69a4a137"
+      sha256 "8240e953608d40e709d042e9ac0e206d518825de3d88a3da9ebeaf2a3ff57ea9"
     end
   end
 
