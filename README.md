@@ -4,7 +4,7 @@ Homebrew formulae that install prebuilt GitHub release binaries on macOS and Lin
 
 | Formula       | Version               | Last Updated          | Notes                                              |
 |---------------|-----------------------|-----------------------|----------------------------------------------------|
-| [`nvim-nightly`](https://github.com/neovim/neovim) | 0.13.0-dev-2009 | 2026-11-03T09:39:03Z | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
+| [`nvim-nightly`](https://github.com/neovim/neovim) | 0.13.0-dev-2012 | 2026-11-04T06:34:22Z | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
 | [`release-plz`](https://github.com/release-plz/release-plz) | 0.4.3 | 2026-11-02T16:18:35Z | musl on Linux; no Intel macOS asset, builds from source there |
 | [`maki`](https://github.com/tontinton/maki) | 0.7.0 | 2026-10-31T12:41:34Z | musl on Linux; use `brew upgrade`, not `maki update` |
 | [`kache`](https://github.com/kunobi-ninja/kache) | 1.2.2 | 2026-10-15T21:28:49Z | musl static binaries on Linux; shell completions |
