@@ -4,6 +4,7 @@ Homebrew formulae that install prebuilt GitHub release binaries on macOS and Lin
 
 | Formula       | Version               | Last Updated          | Notes                                              |
 |---------------|-----------------------|-----------------------|----------------------------------------------------|
+| [`verus`](https://github.com/verus-lang/verus) | 0.2026.11.02.8bf68ee | 2026-11-11T17:13:59Z | zip contents in `libexec`, binaries symlinked into `bin`; needs the matching rustup toolchain |
 | [`nvim-nightly`](https://github.com/neovim/neovim) | 0.13.0-dev-2081 | 2026-11-11T09:30:55Z | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
 | [`helix-nightly`](https://github.com/helix-editor/helix) | 2026.11.10.1529 | 2026-11-10T21:03:19Z | built from a pinned `master` commit, installed as `hx-nightly`; Linux x86_64 bottle hosted on this repo's Releases, other platforms build from source (~2 min) |
 | [`maki`](https://github.com/tontinton/maki) | 0.7.1 | 2026-11-07T01:59:19Z | musl on Linux; use `brew upgrade`, not `maki update` |
