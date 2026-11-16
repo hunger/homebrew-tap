@@ -5,9 +5,9 @@ class HelixNightly < Formula
   # bottle: x86_64_linux
   # Pinned to a master commit; the version is that commit's UTC date and time.
   # CI builds a Linux x86_64 bottle and hosts it on this tap's GitHub Releases.
-  url "https://github.com/helix-editor/helix/archive/a714a818a3a4f6dd5aad3b003a78692f90a1703f.tar.gz"
-  version "2026.11.12.0707"
-  sha256 "17dd2710a75ab33ffe75c72b73451786bfafd73832ea1e2c395ca1dee97e2c04"
+  url "https://github.com/helix-editor/helix/archive/49986e6674e5658164a88f599ec8c822e62ad0db.tar.gz"
+  version "2026.11.16.1353"
+  sha256 "ea08ff1a4758c5a5cfb2c750fbcee16fe30e772239f363f348a35b69cf7cf682"
   license "MPL-2.0"
 
   livecheck do
@@ -20,8 +20,8 @@ class HelixNightly < Formula
   end
 
   bottle do
-    root_url "https://github.com/hunger/homebrew-tap/releases/download/helix-nightly-2026.11.12.0707"
-    sha256 cellar: :any, x86_64_linux: "d2d7bdf6a96e29c2561ce6c4f2457fc6780ab16b00d36dc525a0e83735c107c6"
+    root_url "https://github.com/hunger/homebrew-tap/releases/download/helix-nightly-2026.11.16.1353"
+    sha256 cellar: :any, x86_64_linux: "741ae81596d26fe550b8e4bffe9e8abdc83ab88cb511ec43058c62382416270a"
   end
 
   depends_on "rust" => :build
