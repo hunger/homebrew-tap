@@ -4,9 +4,9 @@ Homebrew formulae that install prebuilt GitHub release binaries on macOS and Lin
 
 | Formula       | Version               | Last Updated          | Notes                                              |
 |---------------|-----------------------|-----------------------|----------------------------------------------------|
+| [`helix-nightly`](https://github.com/helix-editor/helix) | 2026.11.20.1115 | 2026-11-20T13:11:31Z | built from a pinned `master` commit, installed as `hx-nightly`; Linux x86_64 bottle hosted on this repo's Releases, other platforms build from source (~2 min) |
+| [`nvim-nightly`](https://github.com/neovim/neovim) | 0.13.0-dev-2148 | 2026-11-20T13:11:31Z | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
 | [`maki`](https://github.com/tontinton/maki) | 0.7.3 | 2026-11-20T03:25:38Z | musl on Linux; use `brew upgrade`, not `maki update` |
-| [`helix-nightly`](https://github.com/helix-editor/helix) | 2026.11.19.1559 | 2026-11-19T20:51:45Z | built from a pinned `master` commit, installed as `hx-nightly`; Linux x86_64 bottle hosted on this repo's Releases, other platforms build from source (~2 min) |
-| [`nvim-nightly`](https://github.com/neovim/neovim) | 0.13.0-dev-2146 | 2026-11-19T10:27:42Z | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
 | [`kache`](https://github.com/kunobi-ninja/kache) | 2.2.0 | 2026-11-19T00:27:54Z | musl static binaries on Linux; shell completions |
 | [`verus`](https://github.com/verus-lang/verus) | 0.2026.11.02.8bf68ee (re-verified) | 2026-11-11T23:31:37Z | zip contents in `libexec`, binaries symlinked into `bin`; needs the matching rustup toolchain |
 | [`release-plz`](https://github.com/release-plz/release-plz) | 0.4.3 | 2026-11-02T16:18:35Z | musl on Linux; no Intel macOS asset, builds from source there |
