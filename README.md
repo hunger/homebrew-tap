@@ -4,8 +4,8 @@ Homebrew formulae that install prebuilt GitHub release binaries on macOS and Lin
 
 | Formula       | Version               | Last Updated          | Notes                                              |
 |---------------|-----------------------|-----------------------|----------------------------------------------------|
+| [`nvim-nightly`](https://github.com/neovim/neovim) | 0.13.0-dev-2162 | 2026-11-22T12:39:47Z | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
 | [`kache`](https://github.com/kunobi-ninja/kache) | 2.3.0 | 2026-11-21T20:34:22Z | musl static binaries on Linux; shell completions |
-| [`nvim-nightly`](https://github.com/neovim/neovim) | 0.13.0-dev-2152 | 2026-11-21T12:44:31Z | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
 | [`helix-nightly`](https://github.com/helix-editor/helix) | 2026.11.20.1115 | 2026-11-20T13:11:31Z | built from a pinned `master` commit, installed as `hx-nightly`; Linux x86_64 bottle hosted on this repo's Releases, other platforms build from source (~2 min) |
 | [`maki`](https://github.com/tontinton/maki) | 0.7.3 | 2026-11-20T03:25:38Z | musl on Linux; use `brew upgrade`, not `maki update` |
 | [`verus`](https://github.com/verus-lang/verus) | 0.2026.11.02.8bf68ee (re-verified) | 2026-11-11T23:31:37Z | zip contents in `libexec`, binaries symlinked into `bin`; needs the matching rustup toolchain |
