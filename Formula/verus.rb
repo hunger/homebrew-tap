@@ -5,6 +5,7 @@ class Verus < Formula
 
   livecheck do
     url :stable
+    regex(%r{release/(\d+(?:\.\d+)*\.[0-9a-f]+)}i)
     strategy :github_latest
   end
 
