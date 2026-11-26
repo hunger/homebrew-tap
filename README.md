@@ -4,8 +4,8 @@ Homebrew formulae that install prebuilt GitHub release binaries on macOS and Lin
 
 | Formula       | Version               | Last Updated          | Notes                                              |
 |---------------|-----------------------|-----------------------|----------------------------------------------------|
-| [`nvim-nightly`](https://github.com/neovim/neovim) | 0.13.0-dev-2190 | 2026-11-25T11:24:16Z | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
-| [`kache`](https://github.com/kunobi-ninja/kache) | 2.3.1 | 2026-11-25T00:50:28Z | musl static binaries on Linux; shell completions |
+| [`nvim-nightly`](https://github.com/neovim/neovim) | 0.13.0-dev-2206 | 2026-11-26T13:58:34Z | prebuilt `nightly` release, installed as `nvim-nightly`; coexists with `neovim` |
+| [`kache`](https://github.com/kunobi-ninja/kache) | 2.4.0 | 2026-11-26T13:58:34Z | musl static binaries on Linux; shell completions |
 | [`verus`](https://github.com/verus-lang/verus) | 0.2026.11.22.1ce6a59 | 2026-11-24T18:58:14Z | zip contents in `libexec`, binaries symlinked into `bin`; needs the matching rustup toolchain |
 | [`helix-nightly`](https://github.com/helix-editor/helix) | 2026.11.20.1115 | 2026-11-20T13:11:31Z | built from a pinned `master` commit, installed as `hx-nightly`; Linux x86_64 bottle hosted on this repo's Releases, other platforms build from source (~2 min) |
 | [`maki`](https://github.com/tontinton/maki) | 0.7.3 | 2026-11-20T03:25:38Z | musl on Linux; use `brew upgrade`, not `maki update` |
